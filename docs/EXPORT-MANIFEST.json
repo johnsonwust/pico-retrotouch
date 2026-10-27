@@ -1,0 +1,438 @@
+{
+  "schema": 1,
+  "source_variant": "0.3.2-share1",
+  "files": {
+    ".gitattributes": {
+      "bytes": 266,
+      "sha256": "47e41a742cb16318d7735214f7c0b484b0563c8ca8cca786bc860ce8a2e099d2"
+    },
+    ".gitignore": {
+      "bytes": 295,
+      "sha256": "b826cde839f43df5939c3c53869240a74fdd0ea1ce1376258fd00b6c1354f16f"
+    },
+    "assets/font_petme128_8x8.h": {
+      "bytes": 7223,
+      "sha256": "ed285e6c1a65b6d419f0a2eadd28a58d4d3a464316759860536b3f6429514618"
+    },
+    "config/touch_cal.example.h": {
+      "bytes": 119,
+      "sha256": "0616b90fd270082f5364e91a04859fcc8cde99cae5474e6a3d573a64c4ac8538"
+    },
+    "config/touch_cal.example.json": {
+      "bytes": 88,
+      "sha256": "3c60464adbeff1deabcd140b4340008366ec9c3834eb761276f1b0585fecb369"
+    },
+    "docs/AI-WORKFLOW.md": {
+      "bytes": 3410,
+      "sha256": "889b6500e8dfb442b5d0f646646380424044271c337d58732ee78ed897537a66"
+    },
+    "docs/BUILD.md": {
+      "bytes": 6474,
+      "sha256": "b0b2938ca1f4ef4cac1d1fcd07c238800ad28a702133d384fd5ec9c92e7ed78d"
+    },
+    "docs/hardware-overview.svg": {
+      "bytes": 3433,
+      "sha256": "dbdade19f0ea7cfb3f6eb56678dc26ddb71e3cc9c8000ee3ccd0c7edbf1846d5"
+    },
+    "docs/HARDWARE.md": {
+      "bytes": 2542,
+      "sha256": "257f2c661bdc3dbd1fdf0bf8e9da1c8bd02c24a0bc31a1d8997dfdc35a05d001"
+    },
+    "docs/KIT.md": {
+      "bytes": 3140,
+      "sha256": "c44ba0788aeb44caf82dca26aa4b5a4a96939b6e05f2d419cf446e16774f91d1"
+    },
+    "docs/PUBLISHING.md": {
+      "bytes": 2751,
+      "sha256": "140a8534efae7dc39d93fdf5fbd3e5ef6f867de7931d4b05c149c7525661aaf8"
+    },
+    "docs/QUICKSTART.md": {
+      "bytes": 13870,
+      "sha256": "855b11ee6316a4ae3c1ac59d798c3cc41015be865472c71085e126a88a0ae5da"
+    },
+    "docs/screenshots/boot-01-selector.png": {
+      "bytes": 5886,
+      "sha256": "6b1e89c19976b51fd1b821aa9a2141a26cb7bd990c4334b5eff5cc195e924975"
+    },
+    "docs/screenshots/captures.json": {
+      "bytes": 15747,
+      "sha256": "6d49b007b3844767caaf1eb7e87c5f4e582ae7cb6e27ebe6a07899325d505f65"
+    },
+    "docs/screenshots/native-01-finder.png": {
+      "bytes": 2583,
+      "sha256": "9191f2d984bc80f12a908d8ad36f67c415cd52aa2a7fccbeb0ddf99401306b2b"
+    },
+    "docs/screenshots/native-02-blackjack-bets.png": {
+      "bytes": 3221,
+      "sha256": "570eaa1c083b1c8fbbb022e1bc67459262a6b7ee3a19339792c543c1cc0b1f3a"
+    },
+    "docs/screenshots/native-03-blackjack-hand-fit.png": {
+      "bytes": 4166,
+      "sha256": "a949d1fddf6e9089875ca704b749e330589520b72cf570a8063faa2f3bee838a"
+    },
+    "docs/screenshots/native-04-blackjack-hand-detail.png": {
+      "bytes": 863,
+      "sha256": "c65de2cdbbe936cb766da16a73632b3fbaefc75990633041e50602d584370af6"
+    },
+    "docs/screenshots/native-05-blackjack-result.png": {
+      "bytes": 5267,
+      "sha256": "826d17cf0ade286692f46edd8edc4363a9937375acebf6c09ca6769f78d54e06"
+    },
+    "docs/screenshots/native-06-brickles-ready.png": {
+      "bytes": 5260,
+      "sha256": "47b27de8a205a22e027514134ac75bd0b651938e25fcdc09e5fe44fe1fbe3d22"
+    },
+    "docs/screenshots/native-07-brickles-playing.png": {
+      "bytes": 5062,
+      "sha256": "7c948df6026ab0762b82d2640361cd671e2bd17d41394a16e6bac0917f6fb1d7"
+    },
+    "docs/screenshots/native-08-missile-command.png": {
+      "bytes": 3415,
+      "sha256": "ab44015f17922437979c2446377dce17b1447a46c8e287dbf0b02b657a61e5fb"
+    },
+    "docs/screenshots/native-09-calculator.png": {
+      "bytes": 2494,
+      "sha256": "c6476b3d8569faa07fb5b756711c4b7564b5ae00fd36b27920b4a99a480c75c7"
+    },
+    "docs/screenshots/native-10-daleks.png": {
+      "bytes": 2433,
+      "sha256": "e90dbb5b15ceac98db4fbe2ed05e398a0e99822c7861656b377ead7310b79c8f"
+    },
+    "docs/screenshots/native-11-blackbox.png": {
+      "bytes": 3060,
+      "sha256": "2e6b305f22edaf100d1a376635eabd2cea9c06a89f3dda1629ed740d93ed2e26"
+    },
+    "docs/screenshots/native-12-finder-return.png": {
+      "bytes": 2583,
+      "sha256": "9191f2d984bc80f12a908d8ad36f67c415cd52aa2a7fccbeb0ddf99401306b2b"
+    },
+    "docs/screenshots/touch-01-boot.png": {
+      "bytes": 848,
+      "sha256": "236485c2c0043d03ecd27390059ac0e50a3283a1ba25f50654ee3b1c9dbadb7c"
+    },
+    "docs/screenshots/touch-02-desktop.png": {
+      "bytes": 2117,
+      "sha256": "d434e6625622d50a770ca0e7c310f09115fc16cdea8b6fea699eea8c96353b76"
+    },
+    "docs/screenshots/touch-03-desktop-tools.png": {
+      "bytes": 1007,
+      "sha256": "97e95a3597a8b85a4caaa8126df76a6ead26b8c48817e782bcd0d29350ad9992"
+    },
+    "docs/screenshots/touch-04-paint.png": {
+      "bytes": 1782,
+      "sha256": "d3a0e082c784e304c6081d9224f0e5af1fe58a13ebdacc75db3e9c0d1d4a1ced"
+    },
+    "docs/screenshots/touch-05-paint-zoom.png": {
+      "bytes": 1600,
+      "sha256": "5b91247081ee4705b398df3e2edc0671d7a037484722090d180ac6529cd9a09f"
+    },
+    "docs/screenshots/touch-06-gallery.png": {
+      "bytes": 1060,
+      "sha256": "17fbfd22219ab00f83d0f727b4edb2ec28fae4ba25f451d98543ba02833db0d4"
+    },
+    "docs/screenshots/touch-07-saved-picture.png": {
+      "bytes": 1364,
+      "sha256": "f5304a50a01762f1e6093cac210834b5539e87257439a4a89cb177763ae2b6c6"
+    },
+    "docs/screenshots/touch-08-maze.png": {
+      "bytes": 1188,
+      "sha256": "e3df5ec2619e824c649601ec7f4f3ed26ae08e3b2096de9286638f99a86db32c"
+    },
+    "docs/screenshots/touch-09-puzzle.png": {
+      "bytes": 1279,
+      "sha256": "2fe00ec768039dd3ef8740e77b61d8228ecdbd83e37b42445d7bede46ff08036"
+    },
+    "docs/screenshots/touch-10-cards.png": {
+      "bytes": 1740,
+      "sha256": "33f23f3a16aac60a2e2ce6c785bde3fc111e7e308fb4a1305723cfc14d84912c"
+    },
+    "docs/screenshots/touch-11-notes.png": {
+      "bytes": 1847,
+      "sha256": "b160e6992102d25f3d8e2a4f7721fe3a8d53c4d8d6802f0b119afe58ebd34433"
+    },
+    "docs/screenshots/touch-12-puck.png": {
+      "bytes": 1085,
+      "sha256": "76fcd918b1089c0419940881d9a422414f229ab10a071badef250549537b79e4"
+    },
+    "docs/screenshots/touch-13-puck-rally.png": {
+      "bytes": 1081,
+      "sha256": "d9784c3ebdc430241f6a869209c70db805d10c47e2257672d00f948ec8052934"
+    },
+    "docs/screenshots/touch-14-glider.png": {
+      "bytes": 1141,
+      "sha256": "4f7e46f5647d2c837b7a73a1aada65a62ccb9c5cb9e79c1d7f06bfcb2b3ee902"
+    },
+    "docs/screenshots/touch-15-castle.png": {
+      "bytes": 1210,
+      "sha256": "27351fc8b5321f5ca3694c4e37b4b3e400a4d8aed1543b67275f8446a22534c7"
+    },
+    "docs/SCREENSHOTS.md": {
+      "bytes": 5320,
+      "sha256": "3bb2952878315510e652aafb3c079c9fcacc8779d2b85fc61d03dc56914c95fe"
+    },
+    "docs/SOFTWARE-SOURCES.md": {
+      "bytes": 4255,
+      "sha256": "05879acfd93186b07354b98a3a43b516be69c9e5356e45cc4389b75ab81507d8"
+    },
+    "docs/SOURCE_VERIFICATION.json": {
+      "bytes": 2896,
+      "sha256": "78ca28d911bf03c314f26c05ae31f07160ac620c659815467486c87eee428063"
+    },
+    "docs/terminal.svg": {
+      "bytes": 571,
+      "sha256": "db8becf7bb220189f5b6f683899409c9ca3e0f6516cb2c3bab403439074a71ad"
+    },
+    "docs/TINDIE-LISTING.md": {
+      "bytes": 3236,
+      "sha256": "5aba1f280438086c3b4ff1a656cd1e9b903e183056514b41b0ac44b3979c126f"
+    },
+    "docs/VERIFICATION.md": {
+      "bytes": 3061,
+      "sha256": "cc21f741859835337b0292a5d9ba5d12d87f8852e2423bada476b11629e1ac4d"
+    },
+    "docs/wiki/Architecture.md": {
+      "bytes": 3372,
+      "sha256": "4f4d67020516294e54e306f4cee9c3d708d21a4aa12c856c6cc465cf25c739e3"
+    },
+    "docs/wiki/Home.md": {
+      "bytes": 2318,
+      "sha256": "d87af32707443651179d52d700df653b5b22c7693ec72bd96afbdc17b2c366c5"
+    },
+    "docs/wiki/Origins-and-credits.md": {
+      "bytes": 5043,
+      "sha256": "1d63c7c579770c8c91f4cf83f5ac3269e12afeb28bfeb5450e762b7ccac599b0"
+    },
+    "docs/wiki/Software-and-storage.md": {
+      "bytes": 4942,
+      "sha256": "af934ece10ff32bd5521e6c7ef2f86a9855867f2c2199bcafdfc11e50dd44876"
+    },
+    "docs/wiki/User-guide.md": {
+      "bytes": 5901,
+      "sha256": "238aae74046a3b82e24b1aed23c2f96e2f396bb6ffe1c56ee347b4a70d35df40"
+    },
+    "LICENSE.md": {
+      "bytes": 3137,
+      "sha256": "0bad1fb657c7f03475bae625b2a9fc6fc6db88869a9c5909f6974e367b9caefd"
+    },
+    "LICENSES/Font-MicroPython-MIT.txt": {
+      "bytes": 1231,
+      "sha256": "b69145460338f21312392ce4833c15cc268d8585013dbe28b28fd3533825089e"
+    },
+    "LICENSES/GPL-3.0-or-later.txt": {
+      "bytes": 34674,
+      "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0"
+    },
+    "LICENSES/LVGL-MIT.txt": {
+      "bytes": 1072,
+      "sha256": "6a916130a36e83a79bb0dca6c6a7bfe60a67af7d118605e2b7b23bd5ad5c4eb0"
+    },
+    "LICENSES/MicroPython-lib.txt": {
+      "bytes": 14363,
+      "sha256": "a38cf48836aa313254cdcf3de9fb7c24da4a2eab75ead2cc0cecd998336e7800"
+    },
+    "LICENSES/MicroPython.txt": {
+      "bytes": 3419,
+      "sha256": "80d3459978572b5bbb1dd274a98b01a625aeff467588ad69cefdf7eb607c1306"
+    },
+    "LICENSES/Musashi.txt": {
+      "bytes": 1107,
+      "sha256": "90807284ff5f5ded31c0c1b96c5e72cbce6b6c4d2962860b6d064767535ca8b3"
+    },
+    "LICENSES/Pico-SDK-BSD-3-Clause.txt": {
+      "bytes": 1490,
+      "sha256": "90d3d30087971434d558f04561fb7aefc0dbe025ae7be7cdd5cf1881698ff4d7"
+    },
+    "LICENSES/Pico-Toolset-MIT.txt": {
+      "bytes": 1082,
+      "sha256": "eff9cd3c1385f129ef3c6711c8687ad308cfe92e2ad9a01320237fa8ca3fef6c"
+    },
+    "LICENSES/PicoBoot-MIT.txt": {
+      "bytes": 1066,
+      "sha256": "cc63fa60cbcf8b00b6acea7d2c1253a4e3f897b63f47607f0ba49c496cb19a20"
+    },
+    "LICENSES/Picontosh-MIT.txt": {
+      "bytes": 1066,
+      "sha256": "78855e882d4ed24dfd5b736e2c5f06686b642b52cae50a5cb3daf24a524e9b89"
+    },
+    "LICENSES/Project-MIT.txt": {
+      "bytes": 1085,
+      "sha256": "bdef6cb82d49e50c3aef31a8efc96b067458502e06539432e3af9410b75c889e"
+    },
+    "LICENSES/SD-Apache-2.0.txt": {
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "LICENSES/SoftFloat-2b.txt": {
+      "bytes": 1789,
+      "sha256": "468b483b41bd7f2295d6dbf6a57984a08a2351e99a5bd21091e3b77d0903733c"
+    },
+    "LICENSES/ST7789-MIT.txt": {
+      "bytes": 1083,
+      "sha256": "ac3be820816b6bf99b244801ecf567dfa9594bcd04a369ea314d66efee162131"
+    },
+    "LICENSES/umac-MIT.txt": {
+      "bytes": 1177,
+      "sha256": "7865cb24eba7473b7ee2e14e2e8a7c10c39532789102f51569528c944dd49e75"
+    },
+    "local-assets/README.md": {
+      "bytes": 698,
+      "sha256": "3e9cff3fa3f2458f0e8e7d7cef6878254db18c17ae79ea70f48b434ffc661e6a"
+    },
+    "patches/added/toolset/docs/boards/waveshare-pico-restouch-28.md": {
+      "bytes": 1376,
+      "sha256": "e053fe5ac0054d12ad005dcf9484b8178336fa7e4a126dacfc0c9f0cc8957585"
+    },
+    "patches/micropython-layout.patch": {
+      "bytes": 711,
+      "sha256": "b07abfaad78582ae3d26d7f493cdf66aeb4dbe1a192537ed271027d4fe1df7f2"
+    },
+    "patches/pico-fatfs-crc.patch": {
+      "bytes": 1390,
+      "sha256": "3df259418c9ecbd8a722fe3d38a62e191a06dab69b85516f79286b7319473085"
+    },
+    "patches/picoboot.patch": {
+      "bytes": 15810,
+      "sha256": "9a7d05550b3444ac0f1a0cab7420efacbd3b7453a04f40ebfd3a355551631293"
+    },
+    "patches/toolset.patch": {
+      "bytes": 6204,
+      "sha256": "27acba78095481a770a6b0a2d4fae8a3e670594f0cb0e2093f976de1b0b67fa0"
+    },
+    "README.md": {
+      "bytes": 10547,
+      "sha256": "aa6d20dc81fbcff9190ed8b7b673cf587eb704702c7dec34daa43e83063be642"
+    },
+    "requirements-dev.txt": {
+      "bytes": 111,
+      "sha256": "3fa03cefde877f78cf6f0baa7f8216ea4ce167a7480b64578a1aad7eda4a64f9"
+    },
+    "scripts/audit_public.py": {
+      "bytes": 3683,
+      "sha256": "8ef02997e5f7c1224a959b21bf8f903f21a524c28a1c5fa53dff71564a3bccdd"
+    },
+    "scripts/build.py": {
+      "bytes": 5973,
+      "sha256": "0dbcebdec9752d7ececc2fcf8ae567ddcc043d6f266a7b0390150920c706df43"
+    },
+    "scripts/capture_screen.py": {
+      "bytes": 2660,
+      "sha256": "628df0942b4cfe3e1198544d73d8daf84be7dbe141fb6cae4c2f64f6640e232e"
+    },
+    "scripts/check_viewport.py": {
+      "bytes": 705,
+      "sha256": "e528278ef5c761e0ca6ca61c002186f2ec5f34e71b53fbe5ba5159eabc42acfc"
+    },
+    "scripts/console.py": {
+      "bytes": 800,
+      "sha256": "daa4377f86f85a42276a639d79fc31b0fc2f96734390499e45380689deae4bad"
+    },
+    "scripts/fetch_dependencies.py": {
+      "bytes": 2542,
+      "sha256": "7af09f09f4dd70596ee4e6f91c30beba8a72fdf265db5924d4ffa302ed469418"
+    },
+    "scripts/generate_assets.py": {
+      "bytes": 4408,
+      "sha256": "c02704e6b78fb76eaefce04967c80f039c5dbf374c9447a8c33c8107b0ae778c"
+    },
+    "scripts/patch_rom.c": {
+      "bytes": 771,
+      "sha256": "51295b7b59f31a0fd605b3b901640df5847a63009abc2496d8cbe840598ab221"
+    },
+    "scripts/prepare_sd.py": {
+      "bytes": 1556,
+      "sha256": "2042d9465038c5aa546b361698ea703e7d77f70695ad48f5b0fa9f5df3357d90"
+    },
+    "src/bootstrap/main.py": {
+      "bytes": 383,
+      "sha256": "a75688a725ac66be140ce0b7b7df910fde8ceb86d18b3b1705727639759a57e9"
+    },
+    "src/bootstrap/sd_mount.py": {
+      "bytes": 1454,
+      "sha256": "6c180b42ff75cc0078dee15e99cae6322cae3db0858e7136bcbc53c53ec45e8e"
+    },
+    "src/bootstrap/sdcard_crc.py": {
+      "bytes": 10129,
+      "sha256": "515a33617c0e956f63a351a87b284881ebaf808069b104d6b354f2b83aba7204"
+    },
+    "src/mactouch/classic_cards.py": {
+      "bytes": 1533,
+      "sha256": "4c4c4d73f06b25cdbda1e438f4c0bd79051a48c79735406dcf676ad225877ee1"
+    },
+    "src/mactouch/dualtouch.py": {
+      "bytes": 789,
+      "sha256": "ebb97c9533f40c3f383175bf49510b45abd7e031734d99e17e90a3353fa952cb"
+    },
+    "src/mactouch/macclassic.py": {
+      "bytes": 36343,
+      "sha256": "2c49415cbb7c29b6e2d1a2591bd26cf4a04dfec143bf06a11b5318585cbc0839"
+    },
+    "src/mactouch/macdisplay.py": {
+      "bytes": 2672,
+      "sha256": "8421952663c9eaa8e8d2eb1eb664388ea698ffadaf87894ae57d418375b5c7be"
+    },
+    "src/mactouch/macextras.py": {
+      "bytes": 30430,
+      "sha256": "f983aa886b7cf86b54027d7f5eade3e2779401cb7caa70d7e81620e4afb9f824"
+    },
+    "src/mactouch/macstorage.py": {
+      "bytes": 6022,
+      "sha256": "300e1e0d5a3b5d9e1d2cb2534dfa0462b8db51dc7faf1cdd45a01661b1763e71"
+    },
+    "src/mactouch/mactouch.py": {
+      "bytes": 19445,
+      "sha256": "05608ac054230b554e1643bb83d3e4ff9017281c15c175d0837ff9cc38d1b7eb"
+    },
+    "src/mactouch/main.py": {
+      "bytes": 64,
+      "sha256": "451edce51e86369e955b012b3f2137fab6ab8b8505893eea627ddd5015c51770"
+    },
+    "src/mactouch/retro_font.py": {
+      "bytes": 4886,
+      "sha256": "f68ff14a3edac341aee3f062af87ad4b3656e576f21e4885a3da4f2d8d276eed"
+    },
+    "src/mactouch/sdcard_crc.py": {
+      "bytes": 10160,
+      "sha256": "8b84fd3f3ec8a31a712634c35db9ce2def9bb5081535299569efbf06085b6be8"
+    },
+    "src/native/CMakeLists.txt": {
+      "bytes": 1567,
+      "sha256": "2773603e5faf42c3b0effd35aa6355c27ab1a0b085569fa1f7c605f80f14a98e"
+    },
+    "src/native/diagnostics.inc": {
+      "bytes": 1420,
+      "sha256": "fdb770299c30acdec601162556e37df6784a186a2201982b0fa0359c750f2b9e"
+    },
+    "src/native/main_spi.c": {
+      "bytes": 13433,
+      "sha256": "3de8e732361be28791ca35efd8e7ee15fdf20bdc363131855aaf4357c453e421"
+    },
+    "src/native/sd_hw_config.c": {
+      "bytes": 888,
+      "sha256": "0cf0521bc637ba55ccacf96bd558747039962a861c62297da546335b2ea6a162"
+    },
+    "src/viewport/geometry.h": {
+      "bytes": 885,
+      "sha256": "43fa1cef354ffc4f1b4f691f3191894ca5f0ad88a96116bae5477d12e1717eb8"
+    },
+    "src/viewport/profiles.inc": {
+      "bytes": 2982,
+      "sha256": "9fc8cb4073437edcbdeb8cc1fdc31ba4745e2c89f0eeb290a6ac07b8e226f811"
+    },
+    "src/viewport/viewport.inc": {
+      "bytes": 10555,
+      "sha256": "7af6b1e844425eb19c9ab430490588ee62133fad953aa68f31c3eddf378511fe"
+    },
+    "tests/test_viewport.c": {
+      "bytes": 4777,
+      "sha256": "366b22a7dedcc877a1a32363e3d33f7f1f15c343163e48bf425ca511007e0322"
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "bytes": 3279,
+      "sha256": "01595af267148f3fdf7e6b24b339dd636fef22aab1c76a597585b59112e916f1"
+    },
+    "upstreams.lock.json": {
+      "bytes": 2342,
+      "sha256": "3bd8cbaaea66c5cf2c587ae0d0fe6220890e6d6c59332c3c9192307dd4cde96e"
+    }
+  }
+}

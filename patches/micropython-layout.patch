@@ -1,0 +1,13 @@
+diff --git a/ports/rp2/memmap_rp2/memory_flash.incl b/ports/rp2/memmap_rp2/memory_flash.incl
+index ad3a497..eafda06 100644
+--- a/ports/rp2/memmap_rp2/memory_flash.incl
++++ b/ports/rp2/memmap_rp2/memory_flash.incl
+@@ -13,7 +13,7 @@
+      FLASH_ROMFS base = FLASH_FS base - romfs_bytes */
+ MEMORY
+ {
+-    FLASH(rx)       : ORIGIN = 0x10000000, LENGTH = __micropy_flash_size__ - __micropy_flash_storage_bytes__ - __micropy_romfs_bytes__
++    FLASH(rx)       : ORIGIN = 0x10080000, LENGTH = 0x100000
+     FLASH_ROMFS(rx) : ORIGIN = ORIGIN(FLASH) + LENGTH(FLASH), LENGTH = __micropy_romfs_bytes__
+     FLASH_FS(rx)    : ORIGIN = ORIGIN(FLASH_ROMFS) + LENGTH(FLASH_ROMFS), LENGTH = __micropy_flash_storage_bytes__
+ }

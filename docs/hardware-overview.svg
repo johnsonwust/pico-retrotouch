@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">Pico RetroTouch logical hardware overview</title>
+  <desc id="desc">A Raspberry Pi Pico shares SPI1 between an ST7789 LCD, XPT2046 touch controller and SD card, each with a separate chip-select. This is not a mounting-orientation drawing.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#384d5c"/></marker></defs>
+  <rect x="1" y="1" width="958" height="498" rx="14" fill="#faf9f4" stroke="#b7c1c7"/>
+  <g font-family="Arial, sans-serif" fill="#17242d">
+    <text x="32" y="42" font-size="25" font-weight="bold">One Pico. One shared SPI bus. Three devices.</text>
+    <text x="32" y="69" font-size="15">Logical connection guide — use the manufacturer's markings for physical orientation.</text>
+    <rect x="32" y="108" width="236" height="267" rx="12" fill="#dfece5" stroke="#376353" stroke-width="2"/>
+    <text x="52" y="140" font-size="23" font-weight="bold">Raspberry Pi Pico</text>
+    <text x="52" y="167" font-size="17">RP2040 / 2 MiB flash</text>
+    <text x="52" y="202" font-size="16">SPI1 SCK   GP10</text>
+    <text x="52" y="229" font-size="16">MOSI          GP11</text>
+    <text x="52" y="256" font-size="16">MISO          GP12</text>
+    <text x="52" y="297" font-size="15">USB: power + programming</text>
+    <text x="52" y="321" font-size="15">+ serial + boot SD bridge</text>
+    <text x="52" y="352" font-size="15">No USB-host input in this port</text>
+    <path d="M268 212H405V151H529M405 212V274H529M405 274V397H529" stroke="#384d5c" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <path d="M405 151H529M405 274H529" stroke="#384d5c" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="291" y="197" font-size="16" font-weight="bold">SPI1</text>
+    <text x="290" y="238" font-size="13">Shared bus</text>
+    <text x="290" y="257" font-size="13">Separate CS</text>
+    <rect x="541" y="102" width="385" height="101" rx="9" fill="#fff" stroke="#384d5c" stroke-width="2"/>
+    <text x="559" y="130" font-size="20" font-weight="bold">ST7789 LCD — 320 × 240</text>
+    <text x="559" y="157" font-size="16">CS GP9  /  DC GP8</text>
+    <text x="559" y="182" font-size="16">RESET GP15  /  backlight GP13</text>
+    <rect x="541" y="225" width="385" height="101" rx="9" fill="#fff" stroke="#384d5c" stroke-width="2"/>
+    <text x="559" y="254" font-size="20" font-weight="bold">XPT2046 resistive touch</text>
+    <text x="559" y="281" font-size="16">CS GP16  /  IRQ GP17</text>
+    <text x="559" y="306" font-size="16">Stylus input + per-unit calibration</text>
+    <rect x="541" y="348" width="385" height="101" rx="9" fill="#fff" stroke="#384d5c" stroke-width="2"/>
+    <text x="559" y="377" font-size="20" font-weight="bold">microSD — FAT32</text>
+    <text x="559" y="404" font-size="16">CS GP22  /  select SPI mode</text>
+    <text x="559" y="429" font-size="16">Firmware, Python modules, disks, saves</text>
+    <text x="32" y="410" font-size="15">Display board: Waveshare</text>
+    <text x="32" y="434" font-size="16" font-weight="bold">Pico-ResTouch-LCD-2.8</text>
+    <text x="32" y="476" font-size="13" fill="#526570">Original project diagram. Inspired by Picontosh's hardware approach; pin mapping follows Waveshare documentation.</text>
+  </g>
+</svg>

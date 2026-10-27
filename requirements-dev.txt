@@ -1,0 +1,3 @@
+# Optional serial console / PNG capture; building and asset generation use stdlib.
+pyserial>=3.5,<4
+Pillow>=10

@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-27",
+  "source_variant": "0.3.2-share1",
+  "original_hardware_prototype": "0.3.2",
+  "checks": {
+    "public_python_syntax": "passed",
+    "cli_help_and_explicit_rom_requirement": "passed",
+    "viewport_synthetic_pixels": "passed; actual renderer/input, boundaries, Pan, profiles and manual recall",
+    "native_clean_source_build": {
+      "result": "passed",
+      "firmware_bytes": 772044
+    },
+    "boot_menu_clean_source_build": {
+      "result": "passed",
+      "firmware_bytes": 446192
+    },
+    "sd_staging_without_disk": "passed; modules copied, firmware kept local, startup timeout disabled",
+    "public_source_scan": "passed; no ROM/disk/firmware/device serial/personal paths detected",
+    "private_payload_spotcheck": "passed; checked selected ROM/disk chunks against exported files",
+    "markdown_links": "passed",
+    "real_device_documentary_gallery": {
+      "images": 28,
+      "touch_desk_images": 15,
+      "native_images": 12,
+      "all_dimensions": "320x240",
+      "visual_review": "all exported images reviewed",
+      "touch_capture": "device framebuffer CRC verified after SD readback",
+      "native_capture": "all 240 row checks verified per capture",
+      "restoration": "original working disk restored and SHA-256 checked",
+      "boot_menu_images": 1,
+      "boot_menu_capture": "device-written LVGL flush-tile BMP; decoded RGB equality verified for PNG conversion"
+    },
+    "public_native_capture_utility": "passed against running hardware prototype; 240 rows verified",
+    "sample_card_module": "original classic_cards.py included; card scene captured on physical device",
+    "english_documentation": "English-only README, gallery and repository-hosted Wiki pages; local links checked",
+    "publication_documentation": {
+      "assembly_guide": "numbered assembly, source build, SD, BOOTSEL, bootstrap and calibration procedure; not a new full physical installation test",
+      "software_sources": "Garden and E-Maculation provenance recorded; user-supplied ROM/system acquisition not invented",
+      "blog_photos": "source links only; photos not bundled without a reuse license",
+      "kit": "unassembled parts; planned USD69; estimated USD20 shipping; no live listing"
+    }
+  },
+  "dependency_sources": "fixed commits in upstreams.lock.json; clean dependency checkouts with exported patches",
+  "not_checked": [
+    "fresh public MicroPython partition build",
+    "physical device operation with replacement public font/artwork",
+    "complete legal clearance for binary redistribution"
+  ],
+  "privacy": "private local input files, build logs, firmware and generated ROM headers remain outside this repository",
+  "public_repository": "https://github.com/johnsonwust/pico-retrotouch",
+  "publication_scope": "Owner-authorized English source and documentation; clean repository only; no runtime ROM/disk/firmware bundle."
+}

@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "components": {
+    "picoboot": {
+      "url": "https://github.com/lohengrin/PicoBoot.git",
+      "commit": "ab2d998f49ccca5dfb5e79ec76675cd34effd327",
+      "path": "external/PicoBoot",
+      "license": "MIT",
+      "patch": "patches/picoboot.patch"
+    },
+    "toolset": {
+      "url": "https://github.com/lohengrin/Pico-Toolset.git",
+      "commit": "6f085928b57ae0cf55d91a0cb9acada4ee95d28c",
+      "path": "external/PicoBoot/third_party/pico-toolset",
+      "license": "MIT and per-file",
+      "patch": "patches/toolset.patch",
+      "added_files": {
+        "docs/boards/waveshare-pico-restouch-28.md": "patches/added/toolset/docs/boards/waveshare-pico-restouch-28.md"
+      }
+    },
+    "micropython": {
+      "url": "https://github.com/micropython/micropython.git",
+      "commit": "0fd6c573ea815774668bbb16b8e197c8822368b2",
+      "path": "external/micropython",
+      "license": "MIT and per-file",
+      "patch": "patches/micropython-layout.patch"
+    },
+    "pico_sdk": {
+      "url": "https://github.com/raspberrypi/pico-sdk.git",
+      "commit": "079c6f39023649b154152db30f1d781e884879bc",
+      "path": "external/pico-sdk",
+      "license": "BSD-3-Clause and per-file"
+    },
+    "umac": {
+      "url": "https://github.com/evansm7/umac.git",
+      "commit": "606f7f75fee8525d4735a0771bf521007115285e",
+      "path": "external/umac",
+      "license": "MIT and GPL-2.0-or-later"
+    },
+    "musashi": {
+      "url": "https://github.com/evansm7/Musashi.git",
+      "commit": "0b85a7a648e7b4d279b41e096c4d67ad354a82f7",
+      "path": "external/umac/external/Musashi",
+      "license": "MIT and SoftFloat-2b"
+    },
+    "sd_spi": {
+      "url": "https://github.com/evansm7/no-OS-FatFS-SD-SPI-RPi-Pico.git",
+      "commit": "0a3531fdccec9b802fb6b48c4f16d8ee2b63979c",
+      "path": "external/sd-spi",
+      "license": "Apache-2.0 and per-file"
+    },
+    "lvgl": {
+      "url": "https://github.com/lvgl/lvgl.git",
+      "commit": "7f07a129e8d77f4984fff8e623fd5be18ff42e74",
+      "path": "external/lvgl",
+      "license": "MIT and per-asset"
+    },
+    "pico_fatfs": {
+      "url": "https://github.com/elehobica/pico_fatfs.git",
+      "commit": "417fca7fa519a915a7a697e3edf7b9a183243eaa",
+      "path": "external/pico-fatfs",
+      "license": "per-file",
+      "patch": "patches/pico-fatfs-crc.patch"
+    }
+  }
+}

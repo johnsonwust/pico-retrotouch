@@ -1,0 +1,336 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6bb8ded..3df6508 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -42,12 +42,14 @@ endif()
+ # Bootloader flash footprint is a hard constraint (see cmake/picoboot_flash_layout.cmake):
+ # default to size-optimized unless the user picks a build type.
+ set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING "Build type")
++set(PICO_NO_PICOTOOL 1)
+ include(${TOOLSET_ROOT}/pico_sdk_import.cmake)
+ 
+ project(picoboot C CXX ASM)
+ set(CMAKE_CXX_STANDARD 20)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ pico_sdk_init()
++add_compile_definitions(PICO_MALLOC_PANIC=0)
+ 
+ # Statistics for tuning the USB drive (see include/picoboot/trace.h): per-burst throughput over CDC
+ # and the 'stats' serial command (boot timeline, main-loop latency). Every layer uses trace.h.
+diff --git a/cmake/picoboot_app_linker.cmake b/cmake/picoboot_app_linker.cmake
+index 8e161c8..d05173a 100644
+--- a/cmake/picoboot_app_linker.cmake
++++ b/cmake/picoboot_app_linker.cmake
+@@ -22,7 +22,7 @@ set(PICOBOOT_APP_LINKER_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR})
+ function(picoboot_set_app_flash_region TARGET TOTAL_FLASH_SIZE)
+     include(${PICOBOOT_APP_LINKER_CMAKE_DIR}/picoboot_flash_layout.cmake)
+ 
+-    math(EXPR PICOBOOT_APP_FLASH_LENGTH "${TOTAL_FLASH_SIZE} - ${PICOBOOT_BOOT_RESERVE_SIZE}")
++    set(PICOBOOT_APP_FLASH_LENGTH 0x100000) # ResTouch: keep tail LittleFS protected
+ 
+     configure_file(
+         ${PICOBOOT_APP_LINKER_CMAKE_DIR}/../testapps/linker/picoboot_app_flash_region.template.ld
+diff --git a/include/picoboot/board.h b/include/picoboot/board.h
+index 871ccd2..b56f91d 100644
+--- a/include/picoboot/board.h
++++ b/include/picoboot/board.h
+@@ -20,7 +20,7 @@ inline const pico_toolset::SdCardConfig& sd_config() {
+     }();
+     return cfg;
+ #elif defined(PICOBOOT_BOARD_CROWPANEL_PICO_HMI_28)
+-    return pico_toolset::configs::sdcard::kElecrowCrowPanelPicoHmi28;
++    return pico_toolset::configs::sdcard::kWavesharePicoResTouch28;
+ #elif defined(PICOBOOT_BOARD_PRESTO)
+     return pico_toolset::configs::sdcard::kPimoroniPresto;
+ #elif defined(PICOBOOT_BOARD_PICO_DV)
+diff --git a/include/picoboot/flash_layout.h.in b/include/picoboot/flash_layout.h.in
+index 1f06af4..e6d822b 100644
+--- a/include/picoboot/flash_layout.h.in
++++ b/include/picoboot/flash_layout.h.in
+@@ -32,7 +32,9 @@ inline constexpr size_t kFlashSectorSize = @PICOBOOT_FLASH_SECTOR_SIZE@u;
+ // (a pico-sdk-provided macro) into FlashWriter::check_capacity() via
+ // app_partition_size(), below, rather than this header assuming one board.
+ constexpr size_t app_partition_size(size_t total_flash_bytes) {
+-    return total_flash_bytes - kBootReserveSize;
++    // ResTouch reserves the final 512 KiB for MicroPython LittleFS.
++    // Neither firmware loading nor erasure may touch that persistent partition.
++    return total_flash_bytes >= 0x200000 ? 0x100000 : 0;
+ }
+ 
+ } // namespace picoboot
+diff --git a/include/picoboot/lvgl_ui.h b/include/picoboot/lvgl_ui.h
+index 25d449f..131ab55 100644
+--- a/include/picoboot/lvgl_ui.h
++++ b/include/picoboot/lvgl_ui.h
+@@ -35,6 +35,7 @@ private:
+     enum class Pending { kNone, kRefresh, kReboot, kLoad, kEnter, kUp };
+ 
+     void build();
++    void build_welcome();
+     void populate();
+     void set_status(const std::string& text, bool error = false);
+     void start_countdown();
+@@ -47,6 +48,7 @@ private:
+     AppManager& m_manager;
+     pico_toolset::LvglDisplayAdapter& m_adapter;
+     bool m_built = false;
++    bool m_welcome = false;
+ 
+     lv_obj_t* m_list = nullptr;
+     lv_obj_t* m_no_card = nullptr;
+diff --git a/src/boot_core/flash_writer.cpp b/src/boot_core/flash_writer.cpp
+index 30b3ba1..9d93fb8 100644
+--- a/src/boot_core/flash_writer.cpp
++++ b/src/boot_core/flash_writer.cpp
+@@ -79,6 +79,8 @@ int FlashWriter::failure_code() { return g_failure_code; }
+ 
+ WriteResult FlashWriter::write_image(uint32_t flash_base, size_t size, ImageReader read, void* read_ctx,
+                                      const ProgressSink& sink) {
++    // Enforce bounds in the writer itself as well as AppManager.
++    if(flash_base != kAppFlashBase || size == 0 || size > 0x100000) return WriteResult::kFlashFailed;
+     const uint32_t flash_offset = flash_base - kFlashXipBase;
+     const auto* flash = reinterpret_cast<const uint8_t*>(flash_base); // XIP window
+     bool wrote = false;
+diff --git a/src/ui/lvgl/lvgl_ui.cpp b/src/ui/lvgl/lvgl_ui.cpp
+index e876286..5cba85f 100644
+--- a/src/ui/lvgl/lvgl_ui.cpp
++++ b/src/ui/lvgl/lvgl_ui.cpp
+@@ -9,6 +9,7 @@
+ 
+ #include <algorithm>
+ #include <cstdio>
++#include "welcome_assets.h"
+ 
+ namespace picoboot {
+ 
+@@ -19,6 +20,14 @@ constexpr int kHeaderHeightNarrow = 46; // title over subtitle
+ constexpr int kNarrowWidth = 400;
+ constexpr int kStatusHeight = 34; // two lines: error messages wrap
+ constexpr size_t kUpRow = static_cast<size_t>(-1); // user data of the ".." row
++void classic_style(lv_obj_t* obj) {
++    lv_obj_set_style_bg_color(obj,lv_color_white(),0);
++    lv_obj_set_style_text_color(obj,lv_color_black(),0);
++    lv_obj_set_style_border_color(obj,lv_color_black(),0);
++    lv_obj_set_style_radius(obj,0,0);
++    lv_obj_set_style_shadow_width(obj,0,0);
++    for(uint32_t i=0;i<lv_obj_get_child_count(obj);i++)classic_style(lv_obj_get_child(obj,i));
++}
+ } // namespace
+ 
+ struct LvglUiCallbacks {
+@@ -55,6 +64,9 @@ void LvglUi::build() {
+     lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
+     const int w = lv_display_get_horizontal_resolution(m_adapter.display());
+     const int h = lv_display_get_vertical_resolution(m_adapter.display());
++    if(w==320 && h==240 && m_header_button_count==0) {
++        m_welcome=true;build_welcome();m_built=true;return;
++    }
+     // Narrow canvases (e.g. the 320x240 HDMI one) stack the subtitle under
+     // the title and use compact buttons so everything still fits one row.
+     const bool narrow = w < kNarrowWidth;
+@@ -86,11 +98,11 @@ void LvglUi::build() {
+     }
+ 
+     lv_obj_t* title = lv_label_create(title_parent);
+-    lv_label_set_text(title, "PicoBoot");
++    lv_label_set_text(title, "Pico Mac");
+     lv_obj_set_style_text_font(title, &lv_font_montserrat_20, 0);
+ 
+     lv_obj_t* subtitle = lv_label_create(title_parent);
+-    lv_label_set_text(subtitle, "by Lohengrin");
++    lv_label_set_text(subtitle, "Choose a system");
+     lv_obj_set_style_text_font(subtitle, &lv_font_montserrat_14, 0);
+     lv_obj_set_style_text_color(subtitle, lv_palette_main(LV_PALETTE_GREY), 0);
+ 
+@@ -125,6 +137,8 @@ void LvglUi::build() {
+     lv_obj_set_size(m_list, w, h - header_h - kStatusHeight);
+     lv_obj_set_pos(m_list, 0, header_h);
+     lv_obj_set_style_radius(m_list, 0, 0);
++    lv_obj_set_style_pad_all(m_list, 2, 0);
++    lv_obj_set_style_pad_row(m_list, 1, 0);
+ 
+     m_no_card = lv_label_create(scr);
+     lv_label_set_text(m_no_card, "no uSD card");
+@@ -146,9 +160,51 @@ void LvglUi::build() {
+     lv_bar_set_range(m_bar, 0, 100);
+     lv_obj_add_flag(m_bar, LV_OBJ_FLAG_HIDDEN);
+ 
++    classic_style(scr);
+     m_built = true;
+ }
+ 
++void LvglUi::build_welcome() {
++    lv_obj_t* scr=lv_screen_active();
++    classic_style(scr);
++    lv_obj_set_style_bg_opa(scr,LV_OPA_COVER,0);
++    lv_obj_set_style_text_font(scr,&welcome_font,0);
++    lv_obj_t* hero=lv_image_create(scr);
++    lv_image_set_src(hero,&welcome_hero);
++    lv_obj_set_pos(hero,45,20);
++    lv_obj_set_style_image_recolor(hero,lv_color_black(),0);
++    lv_obj_set_style_image_recolor_opa(hero,LV_OPA_COVER,0);
++    lv_obj_t* greeting=lv_label_create(scr);
++    lv_label_set_text(greeting,"Pico RetroTouch");
++    lv_obj_set_width(greeting,320);lv_obj_set_pos(greeting,0,114);
++    lv_obj_set_style_text_align(greeting,LV_TEXT_ALIGN_CENTER,0);
++    m_list=lv_obj_create(scr);
++    classic_style(m_list);
++    lv_obj_set_style_bg_opa(m_list,LV_OPA_COVER,0);
++    lv_obj_set_size(m_list,280,68);lv_obj_set_pos(m_list,20,137);
++    lv_obj_set_style_pad_all(m_list,0,0);lv_obj_set_style_border_width(m_list,0,0);
++    lv_obj_remove_flag(m_list,LV_OBJ_FLAG_SCROLLABLE);
++    m_no_card=lv_label_create(scr);
++    lv_obj_set_size(m_no_card,284,55);lv_obj_set_pos(m_no_card,18,145);
++    lv_obj_set_style_text_align(m_no_card,LV_TEXT_ALIGN_CENTER,0);
++    lv_label_set_long_mode(m_no_card,LV_LABEL_LONG_WRAP);
++    lv_label_set_text(m_no_card,"Insert your SD card, then restart.");
++    m_status=lv_label_create(scr);
++    lv_obj_set_size(m_status,312,28);lv_obj_set_pos(m_status,4,211);
++    lv_obj_set_style_text_align(m_status,LV_TEXT_ALIGN_CENTER,0);
++    lv_obj_set_style_text_font(m_status,&lv_font_montserrat_12,0);
++    lv_label_set_long_mode(m_status,LV_LABEL_LONG_WRAP);
++    lv_label_set_text(m_status,"Choose your world.");
++    m_bar=lv_bar_create(scr);
++    lv_obj_set_size(m_bar,212,9);lv_obj_set_pos(m_bar,54,216);
++    lv_bar_set_range(m_bar,0,100);
++    lv_obj_set_style_bg_color(m_bar,lv_color_hex(0xdddddd),LV_PART_MAIN);
++    lv_obj_set_style_bg_color(m_bar,lv_color_black(),LV_PART_INDICATOR);
++    lv_obj_set_style_radius(m_bar,0,LV_PART_MAIN);
++    lv_obj_set_style_radius(m_bar,0,LV_PART_INDICATOR);
++    lv_obj_add_flag(m_bar,LV_OBJ_FLAG_HIDDEN);
++}
++
+ void LvglUi::populate() {
+     trace::Scope timed("populate");
+     lv_obj_clean(m_list);
+@@ -161,7 +217,38 @@ void LvglUi::populate() {
+     }
+ 
+     const AppCatalog& catalog = m_manager.catalog();
+-    if (!catalog.in_root()) {
++    if(m_welcome) {
++        size_t shown=0;
++        // A firmware catalog is an internal detail. The product exposes two systems.
++        for(const char* name : {"Macintosh.bin","MacTouch.bin"}) {
++            for(size_t i=0;i<catalog.count();i++) {
++                const auto* entry=catalog.find(i);
++                if(entry->is_dir || entry->filename!=name)continue;
++                const bool native=entry->filename=="Macintosh.bin";
++                lv_obj_t* btn=lv_button_create(m_list);classic_style(btn);
++                lv_obj_set_size(btn,132,60);lv_obj_set_pos(btn,shown?146:2,3);
++                lv_obj_set_style_radius(btn,5,0);lv_obj_set_style_border_width(btn,1,0);
++                lv_obj_set_style_pad_all(btn,0,0);
++                lv_obj_set_style_bg_color(btn,lv_color_black(),LV_STATE_PRESSED);
++                lv_obj_set_style_text_color(btn,lv_color_white(),LV_STATE_PRESSED);
++                if(native) {
++                    lv_obj_set_style_outline_color(btn,lv_color_black(),0);
++                    lv_obj_set_style_outline_width(btn,1,0);
++                    lv_obj_set_style_outline_pad(btn,2,0);
++                }
++                lv_obj_t* label=lv_label_create(btn);
++                lv_label_set_text(label,native?"Emulator\nUser disk":"Touch desk\nClassic");
++                lv_obj_set_style_text_align(label,LV_TEXT_ALIGN_CENTER,0);
++                lv_obj_set_style_text_line_space(label,5,0);lv_obj_center(label);
++                lv_obj_set_user_data(btn,reinterpret_cast<void*>(i));
++                lv_obj_add_event_cb(btn,LvglUiCallbacks::select,LV_EVENT_CLICKED,this);
++                shown++;break;
++            }
++        }
++        if(!shown)lv_list_add_text(m_list,"System files not found.");
++        return;
++    }
++    if (!catalog.in_root() && catalog.cwd()!="DUALBOOT") {
+         std::string where = "/" + catalog.cwd();
+         lv_list_add_text(m_list, where.c_str());
+         lv_obj_t* up = lv_list_add_button(m_list, LV_SYMBOL_LEFT, "..");
+@@ -175,11 +262,24 @@ void LvglUi::populate() {
+         char text[96];
+         if (entry->is_dir) {
+             snprintf(text, sizeof(text), "%s", entry->filename.c_str());
++        } else if(entry->filename=="MacTouch.bin") {
++            snprintf(text,sizeof(text),"MacTouch Classic");
++        } else if(entry->filename=="Macintosh.bin") {
++            snprintf(text,sizeof(text),"Macintosh / System 3.2");
++        } else if(entry->filename=="Z1-MissileCommand.bin") {
++            snprintf(text,sizeof(text),"Missile Command");
++        } else if(entry->filename=="Z2-Daleks.bin") {
++            snprintf(text,sizeof(text),"Daleks");
+         } else {
+             snprintf(text, sizeof(text), "%s  (%lu KB)", entry->filename.c_str(),
+                      static_cast<unsigned long>((entry->size_bytes + 1023) / 1024));
+         }
+         lv_obj_t* btn = lv_list_add_button(m_list, entry->is_dir ? LV_SYMBOL_DIRECTORY : LV_SYMBOL_FILE, text);
++        classic_style(btn);
++        lv_obj_set_style_border_width(btn,1,0);
++        lv_obj_set_style_bg_color(btn,lv_color_hex(0xcccccc),LV_STATE_PRESSED);
++        lv_obj_set_height(btn,shown>2 ? 36 : 52);
++        lv_obj_set_style_pad_ver(btn,4,0);
+         lv_obj_set_user_data(btn, reinterpret_cast<void*>(i));
+         lv_obj_add_event_cb(btn, LvglUiCallbacks::select, LV_EVENT_CLICKED, this);
+         if (entry->is_dir && entry->filename == m_reselect) reselect = btn;
+@@ -196,7 +296,7 @@ void LvglUi::populate() {
+ void LvglUi::set_status(const std::string& text, bool error) {
+     lv_obj_add_flag(m_bar, LV_OBJ_FLAG_HIDDEN);
+     lv_obj_remove_flag(m_status, LV_OBJ_FLAG_HIDDEN);
+-    lv_obj_set_style_text_color(m_status, error ? lv_palette_main(LV_PALETTE_RED) : lv_color_white(), 0);
++    lv_obj_set_style_text_color(m_status, error ? lv_palette_main(LV_PALETTE_RED) : lv_color_black(), 0);
+     lv_label_set_text(m_status, text.c_str());
+ }
+ 
+diff --git a/targets/picoboot_lvgl_crowpanel/main.cpp b/targets/picoboot_lvgl_crowpanel/main.cpp
+index 5f9cdd7..0e6077d 100644
+--- a/targets/picoboot_lvgl_crowpanel/main.cpp
++++ b/targets/picoboot_lvgl_crowpanel/main.cpp
+@@ -64,6 +64,8 @@ int main() {
+ 
+     picoboot::stack_paint(); // for the 'info' command's stack headroom
+     stdio_init_all();
++    // ResTouch has all three devices on SPI1; deselect peers before SD init.
++    for(uint pin : {9u,16u,22u}) { gpio_init(pin);gpio_set_dir(pin,GPIO_OUT);gpio_put(pin,1); }
+ 
+     static pico_toolset::SdCard sd_card;
+     static picoboot::AppManager manager(sd_card, picoboot::board::sd_config());
+@@ -75,14 +77,14 @@ int main() {
+     release_bus_and_pump_usb();
+     manager.scan();
+     release_bus_and_pump_usb();
+-    g_lcd.init(pico_toolset::configs::st7789::kElecrowCrowPanelPicoHmi28);
++    g_lcd.init(pico_toolset::configs::st7789::kWavesharePicoResTouch28);
+     g_lcd.set_backlight(255);
+     release_bus_and_pump_usb();
+     g_lcd.fill_solid(0x0000); // clear power-up noise before the first frame
+ 
+     // Touch shares SPI1 with the panel and the SD card (separate CS lines).
+     static pico_toolset::Xpt2046Touch touch;
+-    auto touch_config = pico_toolset::configs::xpt2046::kElecrowCrowPanelPicoHmi28;
++    auto touch_config = pico_toolset::configs::xpt2046::kWavesharePicoResTouch28;
+     touch_config.spi_instance = g_lcd.spi();
+     touch.init(touch_config);
+ 
+@@ -95,17 +97,23 @@ int main() {
+     // swap, horizontal = raw y (~254..3707) and vertical = raw x (~278..3769).
+     pico_toolset::LvglTouchCalibration cal;
+     cal.swap_axes = true;
+-    cal.raw_h_min = 254; cal.raw_h_max = 3707;
+-    cal.raw_v_min = 278; cal.raw_v_max = 3769;
++    cal.raw_h_min = 4000; cal.raw_h_max = 375;
++    cal.raw_v_min = 228; cal.raw_v_max = 3896;
+     adapter.add_touch(touch, cal);
+ 
+     static picoboot::LvglUi ui(manager, adapter, /*allow_auto_boot=*/!from_app_request);
+     static picoboot::SerialUi serial_ui(manager, /*allow_auto_boot=*/false);
++    static bool maintenance = false;
++    serial_ui.add_command("maintenance", [] {
++        maintenance = true;
++        printf("MAINTENANCE: touch UI paused for USB SD transfer; reboot to resume\n");
++    });
++    serial_ui.add_command("screen", [] { ui.request_screenshot(); });
+ #ifdef PICOBOOT_USB_STATS
+     serial_ui.add_command("stats", [] { picoboot::trace::print(); });
+ #endif
+     while (true) {
+-        ui.poll();
++        if (!maintenance) ui.poll();
+         serial_ui.poll();
+         release_bus_and_pump_usb();
+     }

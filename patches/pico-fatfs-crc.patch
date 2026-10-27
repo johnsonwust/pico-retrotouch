@@ -1,0 +1,36 @@
+--- a/tf_card.c
++++ b/tf_card.c
+@@ -390,16 +390,15 @@
+         if (!_select()) return 0xFF;
+     }
+ 
+-    /* Send command packet */
+-    xchg_spi(0x40 | cmd);               /* Start + command index */
+-    xchg_spi((BYTE)(arg >> 24));        /* Argument[31..24] */
+-    xchg_spi((BYTE)(arg >> 16));        /* Argument[23..16] */
+-    xchg_spi((BYTE)(arg >> 8));         /* Argument[15..8] */
+-    xchg_spi((BYTE)arg);                /* Argument[7..0] */
+-    n = 0x01;                           /* Dummy CRC + Stop */
+-    if (cmd == CMD0) n = 0x95;          /* Valid CRC for CMD0(0) */
+-    if (cmd == CMD8) n = 0x87;          /* Valid CRC for CMD8(0x1AA) */
+-    xchg_spi(n);
++    /* ResTouch CRC7: card may retain CRC mode across native firmware resets. */
++    BYTE packet[5]={(BYTE)(0x40|cmd),(BYTE)(arg>>24),(BYTE)(arg>>16),(BYTE)(arg>>8),(BYTE)arg};
++    BYTE crc=0;
++    for(unsigned i=0;i<5;i++) {
++        crc^=packet[i];
++        for(unsigned j=0;j<8;j++)crc=(BYTE)((crc<<1)^((crc&0x80)?0x12:0));
++        xchg_spi(packet[i]);
++    }
++    xchg_spi((BYTE)(crc|1));
+ 
+     /* Receive command resp */
+     if (cmd == CMD12) xchg_spi(0xFF);   /* Diacard following one byte when CMD12 */
+@@ -463,6 +462,7 @@
+                 ty = 0;
+         }
+     }
++    if(ty)send_cmd(59,0); /* explicitly disable data CRC for this driver */
+     CardType = ty;  /* Card type */
+     deselect();
+ 

@@ -1,0 +1,123 @@
+diff --git a/components/sdcard/include/pico_toolset/sdcard_configs.h b/components/sdcard/include/pico_toolset/sdcard_configs.h
+index 104177f..320ee65 100644
+--- a/components/sdcard/include/pico_toolset/sdcard_configs.h
++++ b/components/sdcard/include/pico_toolset/sdcard_configs.h
+@@ -66,6 +66,15 @@ inline const SdCardConfig kElecrowCrowPanelPicoHmi28 = {
+     .gpio_base = -1, // every pin here is within the default 0-31 window
+ };
+ 
++// RP2040 Pico + Waveshare ResTouch 2.8, validated by PicoMacintosh DualBoot
++// with a 16 GB FAT32 card. Conservative clock while sharing SPI1 with LCD
++// and touch; restore this clock before each SD/USB storage operation.
++inline const SdCardConfig kWavesharePicoResTouch28 = [] {
++    auto c = kElecrowCrowPanelPicoHmi28;
++    c.clk_fast_hz = 5'000'000;
++    return c;
++}();
++
+ // Pimoroni Presto's uSD socket in SPI mode on native hardware SPI0
+ // (CLK=GPIO34, CMD/MOSI=GPIO35, DAT0/MISO=GPIO36, DAT3/CS=GPIO39; DAT1/DAT2
+ // on GPIO37/38 unused). All four pins are SPI0-capable, so no PIO is needed
+diff --git a/components/st7789/include/pico_toolset/st7789_configs.h b/components/st7789/include/pico_toolset/st7789_configs.h
+index edb3a03..59c82b5 100644
+--- a/components/st7789/include/pico_toolset/st7789_configs.h
++++ b/components/st7789/include/pico_toolset/st7789_configs.h
+@@ -34,6 +34,17 @@ inline const St7789Config kElecrowCrowPanelPicoHmi28 = {
+ };
+ 
+ 
++// RP2040 Pico + Waveshare Pico-ResTouch-LCD-2.8. Validated by PicoMacintosh
++// DualBoot: same shared-SPI wiring as CrowPanel, but BL=GP13, MADCTL=0x60
++// and a 40 MHz pixel clock. Keep CrowPanel's original preset unchanged.
++inline const St7789Config kWavesharePicoResTouch28 = [] {
++    auto c = kElecrowCrowPanelPicoHmi28;
++    c.pin_backlight = 13;
++    c.madctl = 0x60;
++    c.spi_freq_hz = 40'000'000;
++    return c;
++}();
++
+ // Pimoroni Pico Display Pack (RP2040, 240x135 SPI TFT, ST7789). Standard
+ // Pimoroni "front" SPI slot pins (spi0: SCK=18, MOSI=19, CS=17, DC=16,
+ // backlight PWM=20) -- no dedicated hardware reset pin on this board, so
+diff --git a/components/xpt2046/include/pico_toolset/xpt2046_configs.h b/components/xpt2046/include/pico_toolset/xpt2046_configs.h
+index 7a0538d..648f6c8 100644
+--- a/components/xpt2046/include/pico_toolset/xpt2046_configs.h
++++ b/components/xpt2046/include/pico_toolset/xpt2046_configs.h
+@@ -45,6 +45,16 @@ inline const Xpt2046Config kElecrowCrowPanelPicoHmi28 = {
+     .touch_freq_hz = 2'000'000,
+ };
+ 
++// PicoMacintosh DualBoot on Waveshare ResTouch 2.8 uses the same CS/IRQ
++// wires. A slower ADC clock and median/discard sampling match the device's
++// previously calibrated touch path. Calibration remains panel-specific.
++inline const Xpt2046Config kWavesharePicoResTouch28 = [] {
++    auto c = kElecrowCrowPanelPicoHmi28;
++    c.touch_freq_hz = 1'000'000;
++    c.pressure_threshold = 200;
++    return c;
++}();
++
+ // Calibration for the CrowPanel PICO HMI 2.8" panel above (320x240), measured
+ // on the board: the controller's axes are swapped relative to the panel
+ // (moving vertically changes raw x) and neither is inverted -- both raw values
+diff --git a/components/xpt2046/src/xpt2046.cpp b/components/xpt2046/src/xpt2046.cpp
+index ab3bbb5..94ffaea 100644
+--- a/components/xpt2046/src/xpt2046.cpp
++++ b/components/xpt2046/src/xpt2046.cpp
+@@ -1,6 +1,7 @@
+ #include "pico_toolset/xpt2046.h"
+ 
+ #include "hardware/gpio.h"
++#include <algorithm>
+ 
+ namespace pico_toolset {
+ 
+@@ -77,22 +78,29 @@ Xpt2046Touch::RawSample Xpt2046Touch::read() {
+     const uint8_t control_y = build_control_byte(Xpt2046Channel::Y, m_touch_reference);
+ 
+     spi_set_baudrate(m_spi, m_touch_baud);
+-    gpio_put(m_pin_cs, 0);
+-    const uint16_t z1 = convert(control_z1);
+-    const uint16_t z2 = convert(control_z2);
++    auto sample=[&](uint8_t control) {
++        gpio_put(m_pin_cs,0);auto value=convert(control);gpio_put(m_pin_cs,1);return value;
++    };
++    uint16_t zs1[5],zs2[5];
++    for(int i=0;i<5;i++) { sample(control_z1);zs1[i]=sample(control_z1);sample(control_z2);zs2[i]=sample(control_z2); }
++    std::sort(zs1,zs1+5);std::sort(zs2,zs2+5);
++    const uint16_t z1=zs1[2],z2=zs2[2];
+     int32_t z = (4095 - static_cast<int32_t>(z2)) + static_cast<int32_t>(z1);
+     if (z < 0)
+         z = -z;
+ 
+-    if (z < m_pressure_threshold) {
++    if (z1<100 || z2>4010 || z < m_pressure_threshold) {
+         gpio_put(m_pin_cs, 1);
+         return {};
+     }
+ 
+-    const uint16_t x = convert(control_x);
+-    const uint16_t y = convert(control_y);
++    uint16_t xs[5],ys[5];
++    for(int i=0;i<5;i++) { sample(control_x);xs[i]=sample(control_x);sample(control_y);ys[i]=sample(control_y); }
++    std::sort(xs,xs+5);std::sort(ys,ys+5);
++    const uint16_t x=xs[2],y=ys[2];
+     gpio_put(m_pin_cs, 1);
+ 
++    if(x<80 || x>4015 || y<80 || y>4015)return {};
+     return RawSample{true, x, y};
+ }
+ 
+diff --git a/docs/boards/README.md b/docs/boards/README.md
+index 666cc5b..cc90401 100644
+--- a/docs/boards/README.md
++++ b/docs/boards/README.md
+@@ -6,6 +6,7 @@ facts in the same place.
+ 
+ | Document | Hardware | Presets used | Example (built by `examples/`) | Status |
+ |---|---|---|---|---|
++| [Waveshare Pico ResTouch 2.8](waveshare-pico-restouch-28.md) | RP2040 Pico, ST7789, XPT2046, SPI uSD | `st7789`, `xpt2046`, `sdcard` ResTouch presets | external PicoMacintosh DualBoot | Display, SD and boot switching tested; stylus selection feedback tracked by consumer |
+ | [Waveshare RP2350-PiZero](waveshare-rp2350-pizero.md) | RP2350B, HDMI/DVI, uSD, PIO-USB, optional PSRAM | `psram`, `sdcard`, `usb_hid` (+ DVI pin config) | `waveshare_pizero` | Display path not re-run from this repo; everything else validated |
+ | [Waveshare 3.5" RPi LCD (A) on the PiZero](waveshare-3.5-rpi-lcd-a.md) | ILI9486 (or ST7796U) + XPT2046 over the 40-pin header | `ili9486` / `st7796`, `xpt2046`, `usb_hid` | `waveshare_pizero_lcd35a` | Validated (ILI9486 and ST7796U) |
+ | [Pimoroni Pico DV Demo Base](pimoroni-pico-dv-demo-base.md) | HDMI/DVI, uSD, PCM5100A I2S, 3 buttons; Pico, Pico W or Pico 2 | `sdcard`, `i2s_audio` (+ DVI pin config) | `pico_dv_pico1`, `pico_dv_pico1w`, `pico_dv_pico2` | Partial: HDMI validated in PicoBoot, combined example not run |

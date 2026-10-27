@@ -1,0 +1,27 @@
+# User-owned software and all generated firmware stay local.
+/local-assets/*
+!/local-assets/README.md
+/external/
+/build/
+/dist/
+__pycache__/
+*.py[cod]
+*.rom
+*.img
+*.dsk
+*.sit
+*.hqx
+*.uf2
+*.bin
+*.elf
+*.o
+*.a
+*.exe
+*.ram
+quiet_rom.h
+umac-rom.h
+umac-disc.h
+touch_cal.json
+.env
+.env.*
+!.env.example

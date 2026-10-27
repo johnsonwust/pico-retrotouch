@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 132" role="img" aria-label="Pico RetroTouch original terminal illustration">
+<rect x="1" y="1" width="518" height="130" rx="10" fill="#f6f4ed" stroke="#222" stroke-width="2"/>
+<g stroke="#222" stroke-width="3" fill="none"><rect x="25" y="28" width="92" height="75" rx="3"/><path d="M25 43h92M43 57l14 13-14 13m25 0h25"/></g>
+<g fill="#222" font-family="monospace"><text x="145" y="61" font-size="26">Pico RetroTouch</text><text x="145" y="88" font-size="14">SPI display · stylus · source first</text></g>
+</svg>
